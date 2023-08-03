@@ -1,0 +1,7 @@
+{
+    "project": {
+        "name": "octoaddins",
+        "description": "Addins for ONLYOFFICE and LibreOffice.",
+        "version": "0.1.0"
+    }
+}

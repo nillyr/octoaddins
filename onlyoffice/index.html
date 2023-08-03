@@ -1,0 +1,28 @@
+<!--
+  @copyright Copyright (c) 2023 Nicolas GRELLETY
+  @license https://opensource.org/licenses/GPL-3.0 GNU GPLv3
+  @link https://gitlab.internal.lan/octo-project/octoaddins
+  @link https://github.com/nillyr/octoaddins
+  @since 0.1.0
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>octoconf</title>
+	<script type="text/javascript" src="vendor/jquery/3.7.0/jquery.min.js"></script>
+    <script type="text/javascript" src="vendor/jquery-csv/jquery.csv.min.js"></script>
+	<script type="text/javascript" src="vendor/sdkjs-plugins/plugins.js"></script>
+	<script type="text/javascript" src="vendor/sdkjs-plugins/plugins-ui.js"></script>
+	<script type="text/javascript" src="scripts/code.js"></script>
+    <link rel="stylesheet" href="vendor/sdkjs-plugins/plugins.css">
+</head>
+<body id="body" class="body">
+    <div style="justify-content: center;">
+        <label>
+            Sélectionner le fichier
+            <input type="file" id="file-selector" accept=".csv" onchange="readFile(event)">
+        </label>
+    </div>
+</body>
+</html>
