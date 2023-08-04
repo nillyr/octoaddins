@@ -37,27 +37,32 @@ See installation instructions for [ONLYOFFICE plugin](onlyoffice/) and [LibreOff
 
 - Go the `plugins` and select `octoconf`:
 
-![step1](resources/onlyoffice/step_1.png)
+<p align="center">
+  <img src="resources/onlyoffice/step_1.png" width="300">
+</p>
 
-- Choose the `CSV` file generated with `octoconf` and import:
+- Choose the `CSV` file generated with `octoconf`, select the report languague and import:
 
-![step2](resources/onlyoffice/step_2.png)
+<p align="center">
+  <img src="resources/onlyoffice/step_2_en.png" width="150">
+  <img src="resources/onlyoffice/step_2_fr.png" width="150">
+</p>
 
 - Update each `FIXME` accordingly:
 
-![step3](resources/onlyoffice/step_3.png)
+<p align="center">
+  <img src="resources/onlyoffice/step_3.png" width="300">
+</p>
 
 - Same here:
 
-![step4](resources/onlyoffice/step_4.png)
+<p align="center">
+  <img src="resources/onlyoffice/step_4.png" width="300">
+</p>
 
 ### LibreOffice
 
 Soon :)
-
-## TODO
-
-- Internationalization
 
 ## Maintainer
 
