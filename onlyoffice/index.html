@@ -21,6 +21,12 @@
     <div id="octoconf" style="width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;">
         <p style="font-size: 12px;" id="select_file">Select a file</p>
         <input type="file" accept=".csv" onchange="readFile(event)">
+        <br/>
+        <p style="font-size: 12px;" id="select_lang">Select report language</p>
+        <input type="radio" id="EN" name="report_language" value="en-US" onchange="selectLang(event)">
+        <label id="en_radio_label" for="EN">English</label>
+        <input type="radio" id="FR" name="report_language" value="fr-FR" onchange="selectLang(event)">
+        <label id="fr_radio_label" for="FR">French</label>
     </div>
 </body>
 </html>

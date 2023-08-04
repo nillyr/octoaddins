@@ -1,3 +1,6 @@
 {
-    "Select a file": "Sélectionner le fichier"
+    "Select a file": "Sélectionner le fichier",
+    "Select report language": "Sélectionner la langue du rapport",
+    "English": "Anglais",
+    "French": "Français"
 }

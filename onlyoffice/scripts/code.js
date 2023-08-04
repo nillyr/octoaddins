@@ -4,7 +4,6 @@
 // @link https://github.com/nillyr/octoaddins
 // @since 0.1.0
 
-var lang = "en-US";
 var locales =
 {
     "en-US": {
@@ -19,6 +18,12 @@ var locales =
         "Success": "Succès",
         "Failed": "Échec"
     }
+};
+
+var lang = "en-US";
+var selectLang = function(event) {
+    var input = event.target;
+    lang = input.value;
 };
 
 var fileContent = null;
@@ -77,10 +82,12 @@ var convertToDict = function(data) {
 (function (window, undefined) {
     window.Asc.plugin.onTranslate = function() {
         document.getElementById("select_file").innerHTML = window.Asc.plugin.tr("Select a file");
+        document.getElementById("select_lang").innerHTML = window.Asc.plugin.tr("Select report language");
+        document.getElementById("en_radio_label").innerHTML = window.Asc.plugin.tr("English");
+        document.getElementById("fr_radio_label").innerHTML = window.Asc.plugin.tr("French");
     };
 
     window.Asc.plugin.init = function() {
-        lang = window.Asc.plugin.info.lang;
         switch(lang) {
             case "fr-FR":
             case "en-US":
@@ -88,7 +95,7 @@ var convertToDict = function(data) {
             default:
                 lang = "en-US";
         }
-        this.resizeWindow(300, 80, 300, 80, 300, 80);
+        this.resizeWindow(320, 150, 320, 150, 320, 150);
     };
 
     window.Asc.plugin.button = function(id) {
