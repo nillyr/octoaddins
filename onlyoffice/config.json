@@ -23,16 +23,25 @@
             "buttons": [
                 {
                     "text": "Import results",
+                    "textLocale": {
+                        "fr": "Importer les résultats"
+                    },
                     "primary": true
                 },
                 {
                     "text": "Cancel",
+                    "textLocale": {
+                        "fr": "Annuler"
+                    },
                     "primary": false
                 }
             ]
         },
         {
             "description": "About",
+            "descriptionLocale": {
+                "fr": "À propos"
+            },
             "url": "index_about.html",
             "icons": [
                 "resources/img/icon.png",

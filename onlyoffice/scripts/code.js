@@ -4,6 +4,23 @@
 // @link https://github.com/nillyr/octoaddins
 // @since 0.1.0
 
+var lang = "en-US";
+var locales =
+{
+    "en-US": {
+        "Synthesis": "Synthesis",
+        "Conformity level": "Conformity level",
+        "Success": "Success",
+        "Failed": "Failed"
+    },
+    "fr-FR": {
+        "Synthesis": "Synthèse",
+        "Conformity level": "Niveau de conformité",
+        "Success": "Succès",
+        "Failed": "Échec"
+    }
+};
+
 var fileContent = null;
 var readFile = function(event) {
     var input = event.target;
@@ -58,11 +75,23 @@ var convertToDict = function(data) {
 };
 
 (function (window, undefined) {
-    window.Asc.plugin.init = function () {
-        this.resizeWindow(300, 50, 300, 50, 300, 50);
+    window.Asc.plugin.onTranslate = function() {
+        document.getElementById("select_file").innerHTML = window.Asc.plugin.tr("Select a file");
     };
 
-    window.Asc.plugin.button = function (id) {
+    window.Asc.plugin.init = function() {
+        lang = window.Asc.plugin.info.lang;
+        switch(lang) {
+            case "fr-FR":
+            case "en-US":
+                break;
+            default:
+                lang = "en-US";
+        }
+        this.resizeWindow(300, 80, 300, 80, 300, 80);
+    };
+
+    window.Asc.plugin.button = function(id) {
         // id = 0 = primary button = "Import results"
         if (id == 0) {
             var csvContent = getCSVContentFromText(fileContent);
@@ -80,12 +109,13 @@ var convertToDict = function(data) {
 
             // callCommand method is executed in its own context isolated from other js data
             // pass additional data to callCommand
-            Asc.scope.st = [results, tableHeaders, nbSuccess, nbFailed];
+            Asc.scope.st = [results, tableHeaders, nbSuccess, nbFailed, locales[lang]];
             this.callCommand(function() {
                 var results = Asc.scope.st[0];
                 var tableHeaders = Asc.scope.st[1];
                 var nbSuccess = Asc.scope.st[2];
                 var nbFailed = Asc.scope.st[3];
+                var locales = Asc.scope.st[4];
 
                 // Document
                 var oDocument = Api.GetDocument();
@@ -99,7 +129,7 @@ var convertToDict = function(data) {
                 oParagraph = Api.CreateParagraph();
                 oDocumentStyle = oDocument.GetStyle("Heading 3");
                 oParagraph.SetStyle(oDocumentStyle);
-                oParagraph.AddText("Synthesis");
+                oParagraph.AddText(locales["Synthesis"]);
                 oDocument.InsertContent([oParagraph]);
 
                 oParagraph = Api.CreateParagraph();
@@ -117,9 +147,9 @@ var convertToDict = function(data) {
                 var nStyleIndex = 2; // "Office"
                 var oChart = Api.CreateChart("pie", [
                     series
-                ], ["percent"], ["Success", "Failed"], nWidth, nHeight, nStyleIndex);
+                ], ["percent"], [locales["Success"], locales["Failed"]], nWidth, nHeight, nStyleIndex);
                 oChart.ApplyChartStyle(7);
-                oChart.SetTitle("Conformity level", 13);
+                oChart.SetTitle(locales["Conformity level"], 13);
                 oChart.SetLegendPos("right");
                 oParagraph.AddDrawing(oChart);
                 oParagraph.SetJc("center");
@@ -237,7 +267,7 @@ var convertToDict = function(data) {
                     oParagraph = Api.CreateParagraph();
                     oDocumentStyle = oDocument.GetStyle("Heading 4");
                     oParagraph.SetStyle(oDocumentStyle);
-                    oParagraph.AddText("Synthesis");
+                    oParagraph.AddText(locales["Synthesis"]);
                     oDocument.InsertContent([oParagraph]);
 
                     oParagraph = Api.CreateParagraph();
