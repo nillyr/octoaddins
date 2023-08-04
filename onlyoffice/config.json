@@ -7,14 +7,8 @@
             "description": "octoconf",
             "url": "index.html",
             "icons": [
-                {
-                    "100%": {
-                        "normal": "resources/img/icon.png"
-                    },
-                    "200%": {
-                        "normal": "resources/img/icon@2x.png"
-                    }
-                }
+                "resources/img/icon.png",
+                "resources/img/icon@2x.png"
             ],
             "isViewer": true,
             "EditorsSupport": [
@@ -23,6 +17,9 @@
             "isVisual": true,
             "isModal": true,
             "isInsideMode": false,
+            "initDataType": "none",
+            "initData": "",
+            "isUpdateOleOnResize": false,
             "buttons": [
                 {
                     "text": "Import results",
@@ -36,21 +33,12 @@
         },
         {
             "description": "About",
-            "descriptionLocale": {
-                "fr": "À propos"
-            },
             "url": "index_about.html",
             "icons": [
-                {
-                    "100%": {
-                        "normal": "resources/img/icon.png"
-                    },
-                    "200%": {
-                        "normal": "resources/img/icon@2x.png"
-                    }
-                }
+                "resources/img/icon.png",
+                "resources/img/icon@2x.png"
             ],
-            "isViewer": false,
+            "isViewer": true,
             "EditorsSupport": [
                 [
                     "word"
@@ -61,6 +49,7 @@
             "isInsideMode": false,
             "initDataType": "none",
             "initData": "",
+            "isUpdateOleOnResize": false,
             "buttons": [
                 {
                     "text": "Ok",
@@ -69,7 +58,7 @@
             ],
             "size": [
                 400,
-                50
+                150
             ]
         }
     ]

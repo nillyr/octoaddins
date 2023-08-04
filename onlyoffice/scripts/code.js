@@ -23,44 +23,54 @@ var getCSVContentFromText = function(data) {
     return $.csv.toArrays(data, options);
 };
 
-var RuleResult = function(category_reference, rule_reference, rule_name, rule_level, rule_severity, compliant) {
-    this.category_reference = category_reference;
-    this.rule_reference = rule_reference;
-    this.rule_name = rule_name;
-    this.rule_level = rule_level;
-    this.rule_severity = rule_severity;
+var RuleResult = function(categoryReference, ruleReference, ruleName, ruleLevel, compliant) {
+    this.categoryReference = categoryReference;
+    this.ruleReference = ruleReference;
+    this.ruleName = ruleName;
+    this.ruleLevel = ruleLevel;
     this.compliant = compliant;
 };
 
+var capitalizeFirstLetter = function(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+var tableHeaders = [];
 var convertToDict = function(data) {
     var isCSVHeader = true;
     var dict = {};
     for (var item of data) {
         if (isCSVHeader) {
+            const regex = new RegExp(/(Category|Rule)\s|\s(de la règle)/, "gi");
+            tableHeaders.push(capitalizeFirstLetter(item[2].replace(regex, "")));
+            tableHeaders.push(capitalizeFirstLetter(item[4].replace(regex, "")));
+            tableHeaders.push(capitalizeFirstLetter(item[3].replace(regex, "")));
+            tableHeaders.push(capitalizeFirstLetter(item[6].replace(regex, "")));
             isCSVHeader = false;
             continue;
         }
         if (!dict[item[1]]) {
             dict[item[1]] = [];
         }
-        dict[item[1]].push(new RuleResult(item[0], item[2], item[3], item[4], item[5], item[6]));
+        dict[item[1]].push(new RuleResult(item[0], item[2], item[3], capitalizeFirstLetter(item[4]), item[6]));
     }
     return dict;
 };
 
 (function (window, undefined) {
     window.Asc.plugin.init = function () {
+        this.resizeWindow(300, 50, 300, 50, 300, 50);
     };
 
     window.Asc.plugin.button = function (id) {
         // id = 0 = primary button = "Import results"
         if (id == 0) {
-            var csv_content = getCSVContentFromText(fileContent);
-            var results_dict = convertToDict(csv_content);
+            var csvContent = getCSVContentFromText(fileContent);
+            var results = convertToDict(csvContent);
 
             var nbSuccess = 0;
             var nbFailed = 0;
-            for (var item of csv_content) {
+            for (var item of csvContent) {
                 if (item[6]?.toLowerCase?.() === "true") {
                     nbSuccess++;
                 } else if (item[6]?.toLowerCase?.() === "false") {
@@ -70,17 +80,20 @@ var convertToDict = function(data) {
 
             // callCommand method is executed in its own context isolated from other js data
             // pass additional data to callCommand
-            Asc.scope.st = [results_dict, nbSuccess, nbFailed];
+            Asc.scope.st = [results, tableHeaders, nbSuccess, nbFailed];
             this.callCommand(function() {
-                var results_dict = Asc.scope.st[0];
-                var nbSuccess = Asc.scope.st[1];
-                var nbFailed = Asc.scope.st[2];
+                var results = Asc.scope.st[0];
+                var tableHeaders = Asc.scope.st[1];
+                var nbSuccess = Asc.scope.st[2];
+                var nbFailed = Asc.scope.st[3];
 
+                // Document
                 var oDocument = Api.GetDocument();
                 var oDocumentStyle = oDocument.GetStyle("Heading 2");
                 var oParagraph = Api.CreateParagraph();
                 oParagraph.SetStyle(oDocumentStyle);
                 oParagraph.AddText("FIXME_ASSET_NAME");
+                oParagraph.SetHighlight("yellow");
                 oDocument.InsertContent([oParagraph]);
 
                 oParagraph = Api.CreateParagraph();
@@ -92,7 +105,8 @@ var convertToDict = function(data) {
                 oParagraph = Api.CreateParagraph();
                 oDocumentStyle = oDocument.GetStyle("Normal");
                 oParagraph.SetStyle(oDocumentStyle);
-                oParagraph.AddText("FIXME: add your global synthesis based on the results");
+                oParagraph.AddText("FIXME_SYNTHESIS");
+                oParagraph.SetHighlight("yellow");
                 oDocument.InsertContent([oParagraph]);
 
                 oParagraph = Api.CreateParagraph();
@@ -103,7 +117,7 @@ var convertToDict = function(data) {
                 var nStyleIndex = 2; // "Office"
                 var oChart = Api.CreateChart("pie", [
                     series
-                ], ["percent"], ["success", "failed"], nWidth, nHeight, nStyleIndex);
+                ], ["percent"], ["Success", "Failed"], nWidth, nHeight, nStyleIndex);
                 oChart.ApplyChartStyle(7);
                 oChart.SetTitle("Conformity level", 13);
                 oChart.SetLegendPos("right");
@@ -111,75 +125,113 @@ var convertToDict = function(data) {
                 oParagraph.SetJc("center");
                 oDocument.InsertContent([oParagraph]);
 
-                // FIXME: ajout de la possiblité de choisir la couleur / font style du header du tableau
-                for (const [key, values] of Object.entries(results_dict)) {
+                // Create the style to use for every table
+                var oTableStyle = oDocument.CreateStyle("octoconf", "table");
+                oTableStyle.SetBasedOn(oDocument.GetStyle("Header"));
+                var oTablePr = oTableStyle.GetTablePr();
+                // Set all borders
+                oTablePr.SetTableBorderTop("single", 4, 0, 0, 0, 0);
+                oTablePr.SetTableBorderBottom("single", 4, 0, 0, 0, 0);
+                oTablePr.SetTableBorderLeft("single", 4, 0, 0, 0, 0);
+                oTablePr.SetTableBorderRight("single", 4, 0, 0, 0, 0);
+                oTablePr.SetTableBorderInsideV("single", 4, 0, 0, 0, 0);
+                oTablePr.SetTableBorderInsideH("single", 4, 0, 0, 0, 0);
+                // Use full width
+                oTablePr.SetWidth("percent", 100);
+                // Align text
+                oTablePr.SetJc("left");
+                // Set margins
+                oTablePr.SetTableCellMarginTop(28.346278133681); // 0.05cm
+                oTablePr.SetTableCellMarginBottom(28.346278133681); // 0.05cm
+                oTablePr.SetTableCellMarginLeft(107.7158569079878); // 0.19cm
+                oTablePr.SetTableCellMarginRight(107.7158569079878); // 0.19cm
+                // Enable auto resize
+                oTablePr.SetTableLayout("autofit");
+                // Set row height
+                var oTableRowPr = oTableStyle.GetTableRowPr();
+                oTableRowPr.SetHeight("atLeast", 340.15533760417196); // 0.6cm
+
+                for (const [key, values] of Object.entries(results)) {
                     oParagraph = Api.CreateParagraph();
                     oDocumentStyle = oDocument.GetStyle("Heading 3");
                     oParagraph.SetStyle(oDocumentStyle);
                     oParagraph.AddText(key);
                     oDocument.InsertContent([oParagraph]);
 
-                    // +1 for the header
-                    var oTable = Api.CreateTable(5, values.length + 1);
-                    oTable.SetWidth("percent", 100);
+                    var oTable = Api.CreateTable(4, 1);
+                    oTable.SetStyle(oTableStyle);
+                    oTable.SetTableLook(true, true, true, true, true, true);
+                    var oTableRow = oTable.GetRow(0);
+                    oTableRow.SetBackgroundColor(51,62,78,false);
+                    oTableRow.SetTableHeader(true);
 
-                    oParagraph = Api.CreateParagraph();
-                    oParagraph.AddText("Reference");
-                    var oCell = oTable.GetCell(0,0);
-                    oTable.AddElement(oCell, 0, oParagraph);
-
-                    oParagraph = Api.CreateParagraph();
-                    oParagraph.AddText("Level");
-                    oCell = oTable.GetCell(0,1);
-                    oTable.AddElement(oCell, 0, oParagraph);
-
-                    oParagraph = Api.CreateParagraph();
-                    oParagraph.AddText("Name");
-                    oCell = oTable.GetCell(0,2);
-                    oTable.AddElement(oCell, 0, oParagraph);
-
-                    oParagraph = Api.CreateParagraph();
-                    oParagraph.AddText("Severity");
-                    oCell = oTable.GetCell(0,3);
-                    oTable.AddElement(oCell, 0, oParagraph);
-
-                    oParagraph = Api.CreateParagraph();
-                    oParagraph.AddText("Status");
-                    oCell = oTable.GetCell(0,4);
-                    oTable.AddElement(oCell, 0, oParagraph);
-                    // commit
+                    var colIndex = 0;
+                    for (var header of tableHeaders) {
+                        var oCell = oTableRow.GetCell(colIndex);
+                        var oDocumentElt = oCell.GetContent().GetElement(0);
+                        oDocumentElt.AddText(header);
+                        oDocumentElt.SetBold(true);
+                        oDocumentElt.SetColor(255,255,255);
+                        oTable.AddElement(oCell, 0, oDocumentElt);
+                        colIndex++;
+                    }
+                    // Commit
                     oDocument.InsertContent([oTable]);
 
-                    var row_index = 1;
+                    var rowIndex = 1;
                     for (var value of values) {
-                        oParagraph = Api.CreateParagraph();
-                        oParagraph.AddText(value["rule_reference"]);
-                        oCell = oTable.GetCell(row_index,0);
-                        oTable.AddElement(oCell, 0, oParagraph);
+                        oTable.AddRow(null, true);
+                        var oTableRow = oTable.GetRow(rowIndex);
+                        oTableRow.SetBackgroundColor(255,255,255,false);
+                        oTableRow.SetTableHeader(false);
 
-                        oParagraph = Api.CreateParagraph();
-                        oParagraph.AddText(value["rule_level"]);
-                        oCell = oTable.GetCell(row_index,1);
-                        oTable.AddElement(oCell, 0, oParagraph);
+                        var cellsContent = [
+                            value["ruleReference"],
+                            value["ruleLevel"],
+                            value["ruleName"],
+                            value["compliant"]
+                        ];
 
-                        oParagraph = Api.CreateParagraph();
-                        oParagraph.AddText(value["rule_name"]);
-                        oCell = oTable.GetCell(row_index,2);
-                        oTable.AddElement(oCell, 0, oParagraph);
-
-                        oParagraph = Api.CreateParagraph();
-                        oParagraph.AddText(value["rule_severity"]);
-                        oCell = oTable.GetCell(row_index,3);
-                        oTable.AddElement(oCell, 0, oParagraph);
-
-                        oParagraph = Api.CreateParagraph();
-                        oParagraph.AddText(value["compliant"]);
-                        oCell = oTable.GetCell(row_index,4);
-                        oTable.AddElement(oCell, 0, oParagraph);
-                        // commit
+                        var colIndex = 0;
+                        for (var cellContent of cellsContent) {
+                            var oCell = oTableRow.GetCell(colIndex);
+                            var oDocumentElt = oCell.GetContent().GetElement(0);
+                            oDocumentElt.AddText(cellContent);
+                            switch(cellContent?.toLowerCase?.()) {
+                                case 'minimal':
+                                    oDocumentElt.SetBold(true);
+                                    oDocumentElt.SetColor(197,23,24,false);
+                                    break;
+                                case 'intermediary':
+                                    oDocumentElt.SetBold(true);
+                                    oDocumentElt.SetColor(241,153,45,false);
+                                    break;
+                                case 'enhanced':
+                                    oDocumentElt.SetBold(true);
+                                    oDocumentElt.SetColor(255,204,0,false);
+                                    break;
+                                case 'high':
+                                    oDocumentElt.SetBold(true);
+                                    oDocumentElt.SetColor(0,150,68,false);
+                                    break;
+                                case 'true':
+                                    oDocumentElt.SetBold(true);
+                                    oDocumentElt.SetColor(0,150,68,false);
+                                    break;
+                                case 'false':
+                                    oDocumentElt.SetBold(true);
+                                    oDocumentElt.SetColor(197,23,24,false);
+                                    break;
+                                default:
+                                    oDocumentElt.SetBold(false);
+                                    oDocumentElt.SetColor(0,0,0,false);
+                            }
+                            oTable.AddElement(oCell, 0, oDocumentElt);
+                            colIndex++;
+                        }
+                        // Commit
                         oDocument.InsertContent([oTable]);
-
-                        row_index++;
+                        rowIndex++;
                     }
 
                     oParagraph = Api.CreateParagraph();
@@ -189,27 +241,11 @@ var convertToDict = function(data) {
                     oDocument.InsertContent([oParagraph]);
 
                     oParagraph = Api.CreateParagraph();
-                    oDocumentStyle = oDocument.GetStyle("Normal");
-                    oParagraph.SetStyle(oDocumentStyle);
-                    oParagraph.AddText("FIXME: add your synthesis based on the results");
+                    oParagraph.AddText("FIXME_CATEGORY_SYNTHESIS");
+                    oParagraph.SetHighlight("yellow");
                     oDocument.InsertContent([oParagraph]);
                 }
             }, true);
-            // [0] = Référence de la catégorie,Nom de la catégorie,Référence de la règle,Nom de la règle,Niveau de la règle,Sévérité de la règle,Conforme
-            // [1] = hardware_support,Support matériel,NP_ConfigMateriel_R1,Support des instructions 64 bits par le processeur,enhanced,unknown,True
-
-            // https://api.onlyoffice.com/docbuilder/textdocumentapi/api/getdocument
-
-            // https://api.onlyoffice.com/docbuilder/textdocumentapi/apiparagraph
-            // https://api.onlyoffice.com/docbuilder/textdocumentapi/apiparagraph/addheadingcrossref <<========HERE !!!! :)
-            // https://api.onlyoffice.com/docbuilder/textdocumentapi/apiparagraph/addlinebreak
-
-            // https://api.onlyoffice.com/docbuilder/textdocumentapi/api/createchart
-            // https://api.onlyoffice.com/docbuilder/global#ChartType
-
-            // https://api.onlyoffice.com/docbuilder/textdocumentapi/apitable
-            // https://api.onlyoffice.com/docbuilder/textdocumentapi/api/createtable
-            // https://api.onlyoffice.com/docbuilder/textdocumentapi/apitable/addelement
         } else {
             this.executeCommand("close", "");
         }
