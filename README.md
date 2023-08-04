@@ -8,16 +8,13 @@
 <p align="center">
   <img src="https://img.shields.io/badge/gitmoji-%20😜%20😍-FFDD67.svg">
   <img src="https://img.shields.io/badge/Changelog-gitmoji-brightgreen.svg">
-  <a href="https://twitter.com/n1llyr">
-    <img alt="Twitter: n1llyr" src="https://img.shields.io/twitter/follow/n1llyr.svg?style=social" target="_blank" />
-  </a>
 </p>
 
 | :information_source: Information |
-|:-------------------------------------------------------------|
+|:-----------------------------------------------------------|
 | This repository is mirrored from a private GitLab instance |
 
-See installation instructions for [ONLYOFFICE plugin](onlyoffice/README.md) and [LibreOffice extension](libreoffice/README.md).
+See installation instructions for [ONLYOFFICE plugin](onlyoffice/) and [LibreOffice extension](libreoffice/).
 
 ## Maintainer
 
