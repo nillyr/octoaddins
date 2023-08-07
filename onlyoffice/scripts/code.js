@@ -9,12 +9,16 @@ var locales =
     "en-US": {
         "Synthesis": "Synthesis",
         "Conformity level": "Conformity level",
+        "Compliant": "Compliant",
+        "Non-compliant": "Non-compliant",
         "Success": "Success",
         "Failed": "Failed"
     },
     "fr-FR": {
         "Synthesis": "Synthèse",
         "Conformity level": "Niveau de conformité",
+        "Compliant": "Conforme",
+        "Non-compliant": "Non-conforme",
         "Success": "Succès",
         "Failed": "Échec"
     }
@@ -107,9 +111,9 @@ var convertToDict = function(data) {
             var nbSuccess = 0;
             var nbFailed = 0;
             for (var item of csvContent) {
-                if (item[6]?.toLowerCase?.() === "true") {
+                if (item[6].toLowerCase() === "true") {
                     nbSuccess++;
-                } else if (item[6]?.toLowerCase?.() === "false") {
+                } else if (item[6].toLowerCase() === "false") {
                     nbFailed++;
                 }
             }
@@ -154,7 +158,7 @@ var convertToDict = function(data) {
                 var nStyleIndex = 2; // "Office"
                 var oChart = Api.CreateChart("pie", [
                     series
-                ], ["percent"], [locales["Success"], locales["Failed"]], nWidth, nHeight, nStyleIndex);
+                ], ["percent"], [locales["Compliant"], locales["Non-compliant"]], nWidth, nHeight, nStyleIndex);
                 oChart.ApplyChartStyle(7);
                 oChart.SetTitle(locales["Conformity level"], 13);
                 oChart.SetLegendPos("right");
@@ -233,8 +237,15 @@ var convertToDict = function(data) {
                         for (var cellContent of cellsContent) {
                             var oCell = oTableRow.GetCell(colIndex);
                             var oDocumentElt = oCell.GetContent().GetElement(0);
+
+                            if (cellContent.toLowerCase() === "true") {
+                                cellContent = locales["Compliant"]
+                            } else if (cellContent.toLowerCase() === "false") {
+                                cellContent = locales["Non-compliant"]
+                            }
+
                             oDocumentElt.AddText(cellContent);
-                            switch(cellContent?.toLowerCase?.()) {
+                            switch(cellContent.toLowerCase()) {
                                 case 'minimal':
                                     oDocumentElt.SetBold(true);
                                     oDocumentElt.SetColor(197,23,24,false);
@@ -251,11 +262,11 @@ var convertToDict = function(data) {
                                     oDocumentElt.SetBold(true);
                                     oDocumentElt.SetColor(0,150,68,false);
                                     break;
-                                case 'true':
+                                case locales["Compliant"].toLowerCase():
                                     oDocumentElt.SetBold(true);
                                     oDocumentElt.SetColor(0,150,68,false);
                                     break;
-                                case 'false':
+                                case locales["Non-compliant"].toLowerCase():
                                     oDocumentElt.SetBold(true);
                                     oDocumentElt.SetColor(197,23,24,false);
                                     break;
