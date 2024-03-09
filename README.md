@@ -12,18 +12,12 @@
 
 These Addins allow you to import the results obtained with the octoconf tool.
 
-| :information_source: Information |
-|:-----------------------------------------------------------|
-| This repository is mirrored from a private GitLab instance |
-
 ## Usage
 
 For each imported file (1 file = 1 asset), the following elements are created :
 
 - A global section containing a chart and a summary (to be written by the author);
 - A section for each category, containing a table summarizing the results for each rule, and a section enabling conclusions to be drawn about the category's level of safety/compliance (to be written by the author)
-
-See installation instructions for [ONLYOFFICE plugin](onlyoffice/) and [LibreOffice extension](libreoffice/).
 
 | :information_source: Information |
 |:-----------------------------------------------------------|
@@ -64,13 +58,9 @@ See installation instructions for [ONLYOFFICE plugin](onlyoffice/) and [LibreOff
 
 Soon :)
 
-## Maintainer
+### Microsoft Office (Word)
 
-- Nicolas GRELLETY
-
-## Authors
-
-- Nicolas GRELLETY
+Soon :)
 
 ## Copyright and license
 
